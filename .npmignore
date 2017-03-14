@@ -1,0 +1,9 @@
+/.idea
+/.bin
+/node_modules
+/examples
+/docs
+/test
+/*.tz
+/npm-debug.log
+/terraform
