@@ -5,7 +5,7 @@
 resource "aws_lambda_function" "IngestConsumerLambda" {
   function_name = "${var.ResourcePrefix}IngestConsumerLambda"
   description = "TODO"
-  role = "${aws_iam_role.IngestConsumerLambda_Role.arn}"
+  role = "${aws_iam_role.IngestConsumerLambdaRole.arn}"
   handler = "lib/index/aws.ingestConsumerHandler"
   filename = "${path.module}/lambda_src.zip"
   source_code_hash = "${base64sha256(file("${path.module}/lambda_src.zip"))}"
@@ -25,15 +25,15 @@ resource "aws_cloudwatch_log_group" "IngestConsumerLambda_LogGroup" {
   retention_in_days = "${var.LambdaLogRetention}"
 }
 
-resource "aws_iam_role" "IngestConsumerLambda_Role" {
+resource "aws_iam_role" "IngestConsumerLambdaRole" {
   name = "${var.ResourcePrefix}IngestConsumerLambdaRole"
   path = "/service-role/"
   assume_role_policy = "${file("${path.module}/templates/LambdaExecutionRole.json")}"
 }
 
-resource "aws_iam_role_policy" "IngestConsumerLambda_Role_LoggingPolicy" {
+resource "aws_iam_role_policy" "IngestConsumerLambdaRole_LoggingPolicy" {
   name = "LoggingPolicy"
-  role = "${aws_iam_role.IngestConsumerLambda_Role.name}"
+  role = "${aws_iam_role.IngestConsumerLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -57,7 +57,7 @@ EOF
 
 resource "aws_iam_role_policy" "IngestConsumerLambda_SQSPolicy" {
   name = "SQSPolicy"
-  role = "${aws_iam_role.IngestConsumerLambda_Role.name}"
+  role = "${aws_iam_role.IngestConsumerLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -74,7 +74,7 @@ EOF
 
 resource "aws_iam_role_policy" "IngestConsumerLambda_WorkerInvokePolicy" {
   name = "LambdaInvokePolicy"
-  role = "${aws_iam_role.IngestConsumerLambda_Role.name}"
+  role = "${aws_iam_role.IngestConsumerLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -97,7 +97,7 @@ EOF
 resource "aws_lambda_function" "IngestWorkerLambda" {
   function_name = "${data.template_file.IngestWorkerLambdaFunctionName.rendered}"
   description = "TODO"
-  role = "${aws_iam_role.IngestWorkerLambda_Role.arn}"
+  role = "${aws_iam_role.IngestWorkerLambdaRole.arn}"
   handler = "lib/index/aws.ingestWorkerHandler"
   filename = "${path.module}/lambda_worker_src.zip"
   source_code_hash = "${base64sha256(file("${path.module}/lambda_worker_src.zip"))}"
@@ -117,15 +117,15 @@ resource "aws_cloudwatch_log_group" "IngestWorkerLambda_LogGroup" {
   retention_in_days = "${var.LambdaLogRetention}"
 }
 
-resource "aws_iam_role" "IngestWorkerLambda_Role" {
+resource "aws_iam_role" "IngestWorkerLambdaRole" {
   name = "${var.ResourcePrefix}IngestWorkerLambdaRole"
   path = "/service-role/"
   assume_role_policy = "${file("${path.module}/templates/LambdaExecutionRole.json")}"
 }
 
-resource "aws_iam_role_policy" "IngestWorkerLambda_Role_LoggingPolicy" {
+resource "aws_iam_role_policy" "IngestWorkerLambdaRole_LoggingPolicy" {
   name = "LoggingPolicy"
-  role = "${aws_iam_role.IngestWorkerLambda_Role.name}"
+  role = "${aws_iam_role.IngestWorkerLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -149,7 +149,7 @@ EOF
 
 resource "aws_iam_role_policy" "IngestWorkerLambda_DBPolicy" {
   name = "DBPolicy"
-  role = "${aws_iam_role.IngestWorkerLambda_Role.name}"
+  role = "${aws_iam_role.IngestWorkerLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -174,7 +174,7 @@ EOF
 
 resource "aws_iam_role_policy" "IngestWorkerLambda_SQSPolicy" {
   name = "SQSPolicy"
-  role = "${aws_iam_role.IngestWorkerLambda_Role.name}"
+  role = "${aws_iam_role.IngestWorkerLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -194,7 +194,7 @@ EOF
 
 resource "aws_iam_role_policy" "IngestWorkerLambda_ReceivingStoragePolicy" {
   name = "ReceivingS3Policy"
-  role = "${aws_iam_role.IngestWorkerLambda_Role.name}"
+  role = "${aws_iam_role.IngestWorkerLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -223,7 +223,7 @@ EOF
 resource "aws_lambda_function" "IngestMetricStreamLambda" {
   function_name = "${var.ResourcePrefix}IngestMetricStreamLambda"
   description = "TODO"
-  role = "${aws_iam_role.IngestMetricStreamLambda_Role.arn}"
+  role = "${aws_iam_role.IngestMetricStreamLambdaRole.arn}"
   handler = "lib/index/aws.ingestMetricsStreamHandler"
   filename = "${path.module}/lambda_src.zip"
   source_code_hash = "${base64sha256(file("${path.module}/lambda_src.zip"))}"
@@ -243,15 +243,15 @@ resource "aws_cloudwatch_log_group" "IngestMetricStreamLambda_LogGroup" {
   retention_in_days = "${var.LambdaLogRetention}"
 }
 
-resource "aws_iam_role" "IngestMetricStreamLambda_Role" {
+resource "aws_iam_role" "IngestMetricStreamLambdaRole" {
   name = "${var.ResourcePrefix}IngestMetricStreamLambdaRole"
   path = "/service-role/"
   assume_role_policy = "${file("${path.module}/templates/LambdaExecutionRole.json")}"
 }
 
-resource "aws_iam_role_policy" "IngestMetricStreamLambda_Role_LoggingPolicy" {
+resource "aws_iam_role_policy" "IngestMetricStreamLambdaRole_LoggingPolicy" {
   name = "LoggingPolicy"
-  role = "${aws_iam_role.IngestMetricStreamLambda_Role.name}"
+  role = "${aws_iam_role.IngestMetricStreamLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -275,7 +275,7 @@ EOF
 
 resource "aws_iam_role_policy" "IngestMetricStreamLambda_DBPolicy" {
   name = "DBPolicy"
-  role = "${aws_iam_role.IngestMetricStreamLambda_Role.name}"
+  role = "${aws_iam_role.IngestMetricStreamLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -295,7 +295,7 @@ EOF
 
 resource "aws_iam_role_policy" "IngestMetricStreamLambda_DBStreamPolicy" {
   name = "DBStreamPolicy"
-  role = "${aws_iam_role.IngestMetricStreamLambda_Role.id}"
+  role = "${aws_iam_role.IngestMetricStreamLambdaRole.id}"
   policy = <<EOF
 {
   "Version": "2012-10-17",

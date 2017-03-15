@@ -124,7 +124,7 @@ resource "aws_api_gateway_deployment" "APIDeployment" {
   ]
 
   rest_api_id = "${aws_api_gateway_rest_api.API.id}"
-  stage_name = "prod"
+  stage_name = "api"
   stage_description = "prod-${data.template_file.APIGatewayStageVersion.rendered}"
   description = "${data.template_file.APIGatewayStageVersion.rendered}"
 }

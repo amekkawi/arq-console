@@ -100,7 +100,7 @@ data "aws_caller_identity" "Current" {
 }
 
 data "template_file" "APIGatewayStageVersion" {
-  template = "v1"
+  template = "v3"
 }
 
 // Determine function names here to avoid cyclic dep between lambda and JSON
@@ -128,7 +128,8 @@ data "template_file" "LambdaConfigJSON" {
     "aws_dynamodb_table.ClientMetric.name": ${jsonencode(aws_dynamodb_table.ClientMetric.name)},
     "aws_sns_topic.EmailReceiveTopic.arn": ${jsonencode(aws_sns_topic.EmailReceiveTopic.arn)},
     "aws_s3_bucket.ReceivingStorageBucket.id": ${jsonencode(aws_s3_bucket.ReceivingStorageBucket.id)},
-    "aws_lambda_function.IngestWorkerLambda.function_name": ${jsonencode(data.template_file.IngestWorkerLambdaFunctionName.rendered)}
+    "aws_lambda_function.IngestWorkerLambda.function_name": ${jsonencode(data.template_file.IngestWorkerLambdaFunctionName.rendered)},
+    "aws_api_gateway_resource.APIReceivingProxy.path": ${jsonencode(aws_api_gateway_resource.APIReceivingProxy.path)}
   }
 }
 EOF

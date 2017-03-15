@@ -13,7 +13,7 @@ resource "aws_cloudwatch_log_group" "VerifyEmailLambda_LogGroup" {
 resource "aws_lambda_function" "VerifyEmailLambda" {
   function_name = "${var.ResourcePrefix}VerifyEmailLambda"
   description = "TODO"
-  role = "${aws_iam_role.VerifyEmailLambda_Role.arn}"
+  role = "${aws_iam_role.VerifyEmailLambdaRole.arn}"
   handler = "lib/index/aws.receivingVerifyEmailRecipients"
   filename = "${path.module}/lambda_src.zip"
   source_code_hash = "${base64sha256(file("${path.module}/lambda_src.zip"))}"
@@ -28,15 +28,15 @@ resource "aws_lambda_function" "VerifyEmailLambda" {
   }
 }
 
-resource "aws_iam_role" "VerifyEmailLambda_Role" {
+resource "aws_iam_role" "VerifyEmailLambdaRole" {
   name = "${var.ResourcePrefix}VerifyEmailLambdaRole"
   path = "/service-role/"
   assume_role_policy = "${file("${path.module}/templates/LambdaExecutionRole.json")}"
 }
 
-resource "aws_iam_role_policy" "VerifyEmailLambda_Role_LoggingPolicy" {
+resource "aws_iam_role_policy" "VerifyEmailLambdaRole_LoggingPolicy" {
   name = "LambdaLoggingPolicy"
-  role = "${aws_iam_role.VerifyEmailLambda_Role.name}"
+  role = "${aws_iam_role.VerifyEmailLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -68,7 +68,7 @@ resource "aws_lambda_permission" "VerifyEmailLambda_SESPermission" {
 
 resource "aws_iam_role_policy" "VerifyEmailLambda_DBPolicy" {
   name = "DBPolicy"
-  role = "${aws_iam_role.VerifyEmailLambda_Role.name}"
+  role = "${aws_iam_role.VerifyEmailLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -193,7 +193,7 @@ resource "aws_cloudwatch_log_group" "HTTPPostReceivingLambda_LogGroup" {
 resource "aws_lambda_function" "HTTPPostReceivingLambda" {
   function_name = "${var.ResourcePrefix}HttpPostLambda"
   description = "TODO"
-  role = "${aws_iam_role.HTTPPostReceivingLambda_Role.arn}"
+  role = "${aws_iam_role.HTTPPostReceivingLambdaRole.arn}"
   handler = "lib/index/aws.receivingHTTPPost"
   filename = "${path.module}/lambda_src.zip"
   source_code_hash = "${base64sha256(file("${path.module}/lambda_src.zip"))}"
@@ -208,15 +208,15 @@ resource "aws_lambda_function" "HTTPPostReceivingLambda" {
   }
 }
 
-resource "aws_iam_role" "HTTPPostReceivingLambda_Role" {
+resource "aws_iam_role" "HTTPPostReceivingLambdaRole" {
   name = "${var.ResourcePrefix}HttpPostLambdaRole"
   path = "/service-role/"
   assume_role_policy = "${file("${path.module}/templates/LambdaExecutionRole.json")}"
 }
 
-resource "aws_iam_role_policy" "HTTPPostReceivingLambda_Role_LoggingPolicy" {
+resource "aws_iam_role_policy" "HTTPPostReceivingLambdaRole_LoggingPolicy" {
   name = "LoggingPolicy"
-  role = "${aws_iam_role.HTTPPostReceivingLambda_Role.name}"
+  role = "${aws_iam_role.HTTPPostReceivingLambdaRole.name}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -231,6 +231,61 @@ resource "aws_iam_role_policy" "HTTPPostReceivingLambda_Role_LoggingPolicy" {
       "Resource": [
         "${aws_cloudwatch_log_group.AppLogGroup.arn}",
         "${aws_cloudwatch_log_group.HTTPPostReceivingLambda_LogGroup.arn}"
+      ]
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "HTTPPostReceivingLambdaRole_SQSPolicy" {
+  name = "SQSPolicy"
+  role = "${aws_iam_role.HTTPPostReceivingLambdaRole.name}"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "sqs:SendMessage",
+      "Resource": "${aws_sqs_queue.ReceiveQueue.arn}"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "HTTPPostReceivingLambdaRole_S3Policy" {
+  name = "S3Policy"
+  role = "${aws_iam_role.HTTPPostReceivingLambdaRole.name}"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:PutObject",
+      "Resource": "${aws_s3_bucket.ReceivingStorageBucket.arn}/*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "HTTPPostReceivingLambdaRole_DBPolicy" {
+  name = "DBPolicy"
+  role = "${aws_iam_role.HTTPPostReceivingLambdaRole.name}"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem"
+      ],
+      "Resource": [
+        "${aws_dynamodb_table.Client.arn}"
       ]
     }
   ]
